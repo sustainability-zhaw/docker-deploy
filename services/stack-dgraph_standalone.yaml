@@ -1,0 +1,23 @@
+version: "3.8"
+services:
+  standalone:
+    image: dgraph/standalone:v22.0.1
+    restart: unless-stopped
+    networks:
+      - sdgservices
+    volumes:
+      - type: volume
+        source: dgraph
+        target: /dgraph
+    deploy:
+      placement:
+        constraints:
+          - node.hostname==${HOST_CONSTRAINT}
+networks: 
+  sdgservices: 
+    external: true
+ 
+volumes:
+  dgraph:
+    external: 
+      name: dgraph

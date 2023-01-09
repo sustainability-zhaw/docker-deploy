@@ -1,0 +1,21 @@
+version: "3.8"
+services:
+  frontend:
+    image: ghcr.io/dxiai/sustainability-dashboard:${IMAGETAG}
+    # command: caddy run --config /etc/caddy/Caddyfile
+    restart: unless-stopped
+    networks:
+      - sdgservices
+    configs:
+      - source: sdgweb_config
+        target: /usr/share/caddy/config.json
+
+networks: 
+  sdgservices: 
+    external: true
+
+configs: 
+  sdgweb_config:
+    external: true
+    name: ${CONFIGNAME}
+

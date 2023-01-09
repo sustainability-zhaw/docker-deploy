@@ -1,0 +1,39 @@
+version: "3.8"
+services:
+  caddy:
+    image: caddy:2.6.2
+    # command: caddy run --config /etc/caddy/Caddyfile
+    restart: unless-stopped
+    ports:
+      - target: 80
+        published: 80
+      - target: 443
+        published: 443
+    configs: 
+      - source: proxy_caddyfile
+        target: /etc/caddy/Caddyfile
+    networks:
+      - caddyadmin
+      - sdgservices
+    volumes:
+      # - $PWD/site:/srv
+      - caddy_data:/data
+      - caddy_config:/config
+
+configs:
+  proxy_caddyfile: 
+    external: true
+    # because the config is set as round robin versions, 
+    # FIXME use update API
+    name: ${CONFIGNAME}
+
+networks: 
+  caddyadmin: 
+    external: true
+  sdgservices: 
+    external: true
+
+volumes:
+  caddy_data:
+    external: true
+  caddy_config:

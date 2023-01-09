@@ -1,0 +1,21 @@
+version: "3.8"
+services:
+  standalone:
+    image: sustainability-zhaw/dgraph-schema:sha-145afaf
+    # run once
+    restart: no
+    networks:
+      - sdgservices
+    configs:
+      - source: dgraph-persons
+        target: /data/schema/persons.graphql
+      - source: dgraph-publications
+        target: /data/schema/publications.graphql
+networks: 
+  sdgservices: 
+    external: true
+ 
+volumes:
+  dgraph:
+    external: 
+      name: dgraph

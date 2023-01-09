@@ -1,0 +1,19 @@
+version: "3.8"
+services:
+  autho:
+    image: ghcr.io/phish108/authomator:sha-df07b2d
+    restart: unless-stopped
+    networks:
+      - sdgservices
+    secrets:
+      - source: autho_config
+        target: /etc/authomator/config.yaml
+
+secrets: 
+  autho_config:
+    external: true
+    name: ${CONFIGNAME}
+
+networks: 
+  sdgservices: 
+    external: true

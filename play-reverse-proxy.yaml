@@ -1,0 +1,105 @@
+- name: setup edge proxy service with SDG
+  # speed things up
+  gather_facts: false
+  hosts: mainnode
+
+  tasks:
+  - name: pick HEAD sha from GitHub for deployment
+    set_fact: 
+      # see urltest.yaml for details
+      dashboard_sha: "sha-{{ lookup('url', 'https://api.github.com/repos/dxiai/sustainability-dashboard/git/refs') | from_json |  community.general.json_query('[?ref == `refs/heads/main`].object.sha') | first | regex_search('.{7}') }}"
+
+  # Setup External Networks
+  # https://docs.ansible.com/ansible/latest/collections/community/docker/docker_network_module.html
+  - name: setup caddyadmin network
+    docker_network:
+      name: caddyadmin
+      attachable: true
+      internal: false
+      driver: overlay
+      driver_options: 
+        encrypted: ""
+      state: present
+
+  - name: setup sdgservices network
+    docker_network:
+      name: sdgservices
+      attachable: true
+      internal: false
+      driver: overlay
+      driver_options: 
+        encrypted: ""
+      state: present
+
+  # Setup Configs
+  # https://docs.ansible.com/ansible/latest/collections/community/docker/docker_config_module.html
+  - name: setup proxy configs
+    register: proxyconfig
+    docker_config:
+      name: proxy_caddyfile
+      data: "{{ lookup('file', '/configs/Caddyfile' ) }}"
+      rolling_versions: true
+      versions_to_keep: 5
+      state: present
+   
+  - name: setup authomator configs
+    register: authoconfig
+    docker_secret:
+      name: autho_config
+      data: "{{ lookup('file', '/configs/authomator_config.yaml' ) }}"
+      rolling_versions: true
+      versions_to_keep: 5
+      state: present
+
+  - name: setup dashboard configs
+    register: sdgwebconfig
+    docker_config:
+      name: sdgweb_config
+      data: "{{ lookup('file', './configs/dashboard_config.json' ) | from_json | to_json }}"
+      rolling_versions: true
+      versions_to_keep: 5
+      state: present
+
+  # Deploy the content Service
+  - name: deploy sdg frontend stack from file
+    environment:
+      CONFIGNAME: "{{ sdgwebconfig.config_name }}"
+      IMAGETAG: "{{ dashboard_sha }}"
+    docker_stack:
+      name: sdgfrontend
+      state: present
+      # Prune means that only services in the stack definition are present. Older services will be automatically removed.
+      prune: true
+      compose: 
+      - "{{ lookup('file', './services/stack-sdgfrontend.yaml' ) | from_yaml }}"
+
+  # Deploy the authentication Service
+  - name: deploy auth middleware stack from file
+    # The environment variable tells docker_stack any changed CONFIGNAME
+    environment:
+      CONFIGNAME: "{{ authoconfig.secret_name }}"
+    docker_stack:
+      name: autho
+      state: present
+      prune: true
+      compose: 
+      - "{{ lookup('file', './services/stack-authomator.yaml' ) | from_yaml }}"
+
+  # Deploy the Service
+  - name: deploy reverse proxy stack from file
+    # The environment variable tells docker_stack any changed CONFIGNAME
+    # 
+    environment:
+      CONFIGNAME: "{{ proxyconfig.config_name }}"
+    docker_stack:
+      name: web
+      state: present
+      # Prune means that only services in the stack definition are present. Older services will be automatically removed.
+      prune: true
+      compose: 
+      - "{{ lookup('file', './services/stack-reverse-proxy.yaml' ) | from_yaml }}"
+
+  # Start a container that loads the latest caddie config and submits it to the server
+  # - name: submit caddiy config via API
+  #   debug: 
+  #     msg: TODO
