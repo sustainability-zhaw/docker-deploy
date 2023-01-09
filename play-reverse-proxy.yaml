@@ -6,18 +6,22 @@
   tasks:
   - name: load packages from config
     include_vars:
-      file: /configs/config.yaml
+      file: /configs/configs.yaml
       name: sdg_config
-
-  - name: pick dashboard HEAD sha from GitHub for deployment
-    set_fact: 
-      # see urltest.yaml for details
-      dashboard_sha: "sha-{{ lookup('url', 'https://api.github.com/repos/sustainability-zhaw/sustainability-dashboard/git/refs') | from_json |  community.general.json_query('[?ref == `refs/heads/main`].object.sha') | first | regex_search('.{7}') }}"
 
   - name: pick authomator HEAD sha from GitHub for deployment
     set_fact: 
       # see urltest.yaml for details
       authomator_sha: "sha-{{ lookup('url', 'https://api.github.com/repos/phish108/authomator/git/refs') | from_json |  community.general.json_query('[?ref == `refs/heads/main`].object.sha') | first | regex_search('.{7}') }}"
+
+  - name: pick dashboard HEAD sha from GitHub for deployment
+    set_fact: 
+      # see urltest.yaml for details
+      dashboard_sha: "sha-{{ lookup('url', 'https://api.github.com/repos/sustainability-zhaw/sustainability-dashboard/git/refs') | from_json |  community.general.json_query('[?ref == `refs/heads/main`].object.sha') | first | regex_search('.{7}') }}"
+      adresolver_sha: "sha-{{ lookup('url', 'https://api.github.com/repos/sustainability-zhaw/ad-resolver/git/refs') | from_json |  community.general.json_query('[?ref == `refs/heads/main`].object.sha') | first | regex_search('.{7}') }}"
+      sdgindexer_sha: "sha-{{ lookup('url', 'https://api.github.com/repos/sustainability-zhaw/sdg-indexer/git/refs') | from_json |  community.general.json_query('[?ref == `refs/heads/main`].object.sha') | first | regex_search('.{7}') }}"
+      dspace_sha: "sha-{{ lookup('url', 'https://api.github.com/repos/sustainability-zhaw/extraction-dspace/git/refs') | from_json |  community.general.json_query('[?ref == `refs/heads/main`].object.sha') | first | regex_search('.{7}') }}"
+      evento_sha: "sha-{{ lookup('url', 'https://api.github.com/repos/sustainability-zhaw/extraction-evento/git/refs') | from_json |  community.general.json_query('[?ref == `refs/heads/main`].object.sha') | first | regex_search('.{7}') }}"
 
   # Setup External Networks
   # https://docs.ansible.com/ansible/latest/collections/community/docker/docker_network_module.html

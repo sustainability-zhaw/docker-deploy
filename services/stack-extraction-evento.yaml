@@ -1,0 +1,15 @@
+version: "3.8"
+services:
+  pipeline:
+    image: ghcr.io/sustainability-zhaw/extraction-evento:${IMAGETAG}
+    restart: unless-stopped
+    networks:
+      - sdgservices
+    environment:
+      TARGET_HOST: ${CONFIG_TARGET_HOST}
+      DB_HOST: ${CONFIG_DB_HOST}
+      CUTOFF_DATES: ${CONFIG_CUTOFF_DATES}
+
+networks: 
+  sdgservices: 
+    external: true
