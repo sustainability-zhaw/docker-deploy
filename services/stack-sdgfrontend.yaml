@@ -1,7 +1,7 @@
 version: "3.8"
 services:
   frontend:
-    image: ghcr.io/dxiai/sustainability-dashboard:${IMAGETAG}
+    image: ghcr.io/sustaiability-zhaw/sustainability-dashboard:${IMAGETAG}
     # command: caddy run --config /etc/caddy/Caddyfile
     restart: unless-stopped
     networks:

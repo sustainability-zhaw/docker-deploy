@@ -1,7 +1,8 @@
 version: "3.8"
 services:
   autho:
-    image: ghcr.io/phish108/authomator:sha-df07b2d
+    # image: ghcr.io/phish108/authomator:sha-df07b2d
+    image: ghcr.io/phish108/authomator:${IMAGETAG}
     restart: unless-stopped
     networks:
       - sdgservices
