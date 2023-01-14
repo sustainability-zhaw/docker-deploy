@@ -105,4 +105,4 @@ dist
 
 site/assets
 
-.ansible
+.ansible/
