@@ -9,19 +9,10 @@
       file: /configs/configs.yaml
       name: sdg_config
 
-  - name: pick authomator HEAD sha from GitHub for deployment
-    set_fact: 
-      # see urltest.yaml for details
-      authomator_sha: "sha-{{ lookup('url', 'https://api.github.com/repos/phish108/authomator/git/refs') | from_json |  community.general.json_query('[?ref == `refs/heads/main`].object.sha') | first | regex_search('.{7}') }}"
-
-  - name: pick dashboard HEAD sha from GitHub for deployment
-    set_fact: 
-      # see urltest.yaml for details
-      dashboard_sha: "sha-{{ lookup('url', 'https://api.github.com/repos/sustainability-zhaw/sustainability-dashboard/git/refs') | from_json |  community.general.json_query('[?ref == `refs/heads/main`].object.sha') | first | regex_search('.{7}') }}"
-      adresolver_sha: "sha-{{ lookup('url', 'https://api.github.com/repos/sustainability-zhaw/ad-resolver/git/refs') | from_json |  community.general.json_query('[?ref == `refs/heads/main`].object.sha') | first | regex_search('.{7}') }}"
-      sdgindexer_sha: "sha-{{ lookup('url', 'https://api.github.com/repos/sustainability-zhaw/sdg-indexer/git/refs') | from_json |  community.general.json_query('[?ref == `refs/heads/main`].object.sha') | first | regex_search('.{7}') }}"
-      dspace_sha: "sha-{{ lookup('url', 'https://api.github.com/repos/sustainability-zhaw/extraction-dspace/git/refs') | from_json |  community.general.json_query('[?ref == `refs/heads/main`].object.sha') | first | regex_search('.{7}') }}"
-      evento_sha: "sha-{{ lookup('url', 'https://api.github.com/repos/sustainability-zhaw/extraction-evento/git/refs') | from_json |  community.general.json_query('[?ref == `refs/heads/main`].object.sha') | first | regex_search('.{7}') }}"
+  - name: load container sha from config
+    include_vars:
+      file: ./configs/containers.yaml
+      name: cicd
 
   # Setup External Networks
   # https://docs.ansible.com/ansible/latest/collections/community/docker/docker_network_module.html
@@ -79,6 +70,8 @@
   # Deploy the content Services
 
   - name: deploy dgraph
+    environment:
+      HOST_CONSTRAINT: "{{ sdg_config.dgraph.constraints.host }}"
     docker_stack:
       name: dgraph
       state: present
@@ -89,7 +82,7 @@
   - name: deploy sdg frontend stack from file
     environment:
       CONFIGNAME: "{{ sdgwebconfig.config_name }}"
-      IMAGETAG: "{{ dashboard_sha }}"
+      IMAGETAG: "sha-{{ cicd.containers.dashboard_sha }}"
     docker_stack:
       name: sdgfrontend
       state: present
@@ -103,7 +96,7 @@
     # The environment variable tells docker_stack any changed CONFIGNAME
     environment:
       CONFIGNAME: "{{ authoconfig.secret_name }}"
-      IMAGETAG: "{{ authomator_sha }}"
+      IMAGETAG: "sha-{{ cicd.containers.authomator_sha }}"
     docker_stack:
       name: autho
       state: present
