@@ -1,9 +1,9 @@
 version: "3.8"
 services:
   standalone:
-    image: sustainability-zhaw/dgraph-schema:sha-145afaf
+    image: sustainability-zhaw/dgraph-schema:sha-807b46d
     # run once
-    restart: no
+    restart: "no"
     networks:
       - sdgservices
     configs:
@@ -11,11 +11,11 @@ services:
         target: /data/schema/persons.graphql
       - source: dgraph-publications
         target: /data/schema/publications.graphql
+    environment:
+      DGRAPH_SERVER: http://sustainability-dashboard-db-1:8080
+      SAMPLE_DATA: pubs_and_persons
+
 networks: 
   sdgservices: 
     external: true
  
-volumes:
-  dgraph:
-    external: 
-      name: dgraph

@@ -1,8 +1,8 @@
 version: "3.8"
 services:
   standalone:
-    image: dgraph/standalone:v22.0.1
-    restart: unless-stopped
+    image: dgraph/standalone:v22.0.2
+    # restart: always
     networks:
       - sdgservices
     volumes:
@@ -19,5 +19,6 @@ networks:
  
 volumes:
   dgraph:
-    external: 
-      name: dgraph
+    external: true
+    name: dgraph
+    
