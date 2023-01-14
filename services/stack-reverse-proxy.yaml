@@ -3,7 +3,6 @@ services:
   caddy:
     image: caddy:2.6.2
     # command: caddy run --config /etc/caddy/Caddyfile
-    restart: unless-stopped
     ports:
       - target: 80
         published: 80
@@ -16,8 +15,6 @@ services:
       - caddyadmin
       - sdgservices
     volumes:
-      # - $PWD/site:/srv
-      - caddy_data:/data
       - caddy_config:/config
 
 configs:
@@ -34,6 +31,4 @@ networks:
     external: true
 
 volumes:
-  caddy_data:
-    external: true
   caddy_config:

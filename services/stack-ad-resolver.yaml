@@ -2,7 +2,6 @@ version: "3.8"
 services:
   resolver:
     image: ghcr.io/sustainability-zhaw/ad-resolver:${IMAGETAG}
-    restart: unless-stopped
     networks:
       - sdgservices
     environment:
