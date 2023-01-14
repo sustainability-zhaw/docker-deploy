@@ -4,7 +4,7 @@ An Ansible playbook for deploying the SDG Dashboard on Docker Swarm.
 
 ## Deployment
 
-This repository uses the auto deployment feature of the `ghcr.io/phish108/ansible-docker:7.1.3-2` container.
+This repository uses the auto deployment feature of the `ghcr.io/phish108/ansible-docker:7.1.3-3` container.
 
 ```
 docker run -it --rm 
@@ -12,7 +12,7 @@ docker run -it --rm
            -v ${INVENTORY_PATH}:/inventory \
            -v ${CONFIGS_PATH}:/configs \
            -v $(pwd):/ansible \
-           ghcr.io/phish108/ansible-docker:7.1.3-2
+           ghcr.io/phish108/ansible-docker:7.1.3-3
 ```
 
 ## Preparations 
