@@ -1,7 +1,7 @@
 version: "3.8"
 services:
   standalone:
-    image: sustainability-zhaw/dgraph-schema:sha-807b46d
+    image: sustainability-zhaw/dgraph-schema:sha-2016e66
     # run once
     restart: "no"
     networks:
