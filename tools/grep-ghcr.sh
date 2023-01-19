@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 
 echo "containers:" > configs/containers.yaml
 echo -n "  dashboard_sha: " >> configs/containers.yaml
