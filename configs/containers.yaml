@@ -1,7 +1,7 @@
 containers:
   dashboard_sha: d0da81f
   adresolver_sha: 1434f39
-  schema_sha: d6fd09c
+  schema_sha: 0812f6f
   authomator_sha: df07b2d
   dspace_sha: a3eeb79
   evento_sha: 49ca18e
