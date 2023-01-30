@@ -5,11 +5,16 @@ services:
     # restart: unless-stopped
     networks:
       - sdgservices
-    environment:
-      TARGET_HOST: ${CONFIG_TARGET_HOST}
-      DB_HOST: ${CONFIG_DB_HOST}
-      BATCH_INTERVAL: ${CONFIG_BATCH_INTERVAL}
+    secrets:
+      - source: resolver_config
+        target: /etc/app/config.json
 
 networks: 
   sdgservices: 
     external: true
+
+secrets: 
+  resolver_config:
+    external: true
+    name: ${CONFIGNAME}
+    
