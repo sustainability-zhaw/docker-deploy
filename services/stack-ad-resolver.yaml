@@ -4,10 +4,6 @@ services:
     image: ghcr.io/sustainability-zhaw/ad-resolver:${IMAGETAG}
     networks:
       - sdgservices
-    environment:
-      DB_HOST: ${CONFIG_DB_HOST}
-      BATCH_SIZE: ${CONFIG_BATCH_SIZE}
-      BATCH_INTERVAL: ${CONFIG_BATCH_INTERVAL}
     secrets:
       - source: resolver_config
         target: /etc/app/secrets.json
