@@ -16,12 +16,16 @@ services:
 
   initializer: 
     image: ghcr.io/sustainability-zhaw/dgraph-schema:sha-${DB_INIT}
-    restart: 'no'
+    # restart: "no"
     networks:
       - sdgservices
+    deploy:
+      restart_policy:
+        condition: none
+
     environment:
       TIMEOUT: 20
-      DGRAPH_SERVER: http://standalone:8080
+      DGRAPH_SERVER: http://dgraph_standalone:8080
 
 networks: 
   sdgservices: 
