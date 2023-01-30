@@ -13,6 +13,16 @@ services:
       placement:
         constraints:
           - node.hostname==${HOST_CONSTRAINT}
+
+  initializer: 
+    image: ghcr.io/sustainability-zhaw/dgraph-schema:sha-${DB_INIT}
+    restart: 'no'
+    networks:
+      - sdgservices
+    environment:
+      TIMEOUT: 20
+      DGRAPH_SERVER: http://standalone:8080
+
 networks: 
   sdgservices: 
     external: true
