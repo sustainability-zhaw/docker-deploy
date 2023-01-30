@@ -44,7 +44,7 @@
     register: authoconfig
     docker_secret:
       name: autho_config
-      data: "{{ lookup('file', '/configs/services/authormator/authomator_config.yaml' ) }}"
+      data: "{{ lookup('file', '/configs/services/authomator/authomator_config.yaml' ) }}"
       rolling_versions: true
       versions_to_keep: 2
       state: present
@@ -103,7 +103,7 @@
 
   - name: deploy digital collection extractor
     environment:
-      CONFIGNAME: "{{ dspace_extractor_config.config_name }}"
+      CONFIGNAME: "{{ dspace_extractor_config.secret_name }}"
       IMAGETAG: "sha-{{ cicd.containers.dspace_sha }}"
     docker_stack:
       name: digital_collection
@@ -131,7 +131,7 @@
       CONFIGNAME: "{{ adresolver_config.secret_name }}"
       IMAGETAG: "sha-{{ cicd.containers.adresolver_sha }}"
     docker_stack:
-      name: autho
+      name: activedirectory
       state: present
       prune: true
       compose: 
