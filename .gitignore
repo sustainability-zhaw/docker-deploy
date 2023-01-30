@@ -107,3 +107,4 @@ site/assets
 
 .ansible/
 .bash_history
+tmp/
