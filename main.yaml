@@ -44,7 +44,7 @@
     register: authoconfig
     docker_secret:
       name: autho_config
-      data: "{{ lookup('file', '/configs/authomator_config.yaml' ) }}"
+      data: "{{ lookup('file', '/configs/services/authormator/authomator_config.yaml' ) }}"
       rolling_versions: true
       versions_to_keep: 2
       state: present
@@ -53,7 +53,16 @@
     register: adresolver_config
     docker_secret:
       name: adresolver_config
-      data: "{{ lookup('file', '/configs/ad_resolver.json' ) | from_json | to_json }}"
+      data: "{{ lookup('file', '/configs/services/ad_resolver/ad_resolver.json' ) | from_json | to_json }}"
+      rolling_versions: true
+      versions_to_keep: 2
+      state: present
+
+  - name: setup dspace_extractor config for digital collection
+    register: dspace_extractor_config
+    docker_secret:
+      name: dspace_extractor_config
+      data: "{{ lookup('file', '/configs/services/extractor/digital_collection.json' ) | from_json | to_json }}"
       rolling_versions: true
       versions_to_keep: 2
       state: present
@@ -72,6 +81,7 @@
   - name: deploy dgraph
     environment:
       HOST_CONSTRAINT: "{{ sdg_config.dgraph.constraints.host }}"
+      DB_INIT: "{{ cicd.containers.schema_sha }}"
     docker_stack:
       name: dgraph
       state: present
@@ -91,6 +101,18 @@
       compose: 
       - "{{ lookup('file', './services/stack-sdgfrontend.yaml' ) | from_yaml }}"
 
+  - name: deploy digital collection extractor
+    environment:
+      CONFIGNAME: "{{ dspace_extractor_config.config_name }}"
+      IMAGETAG: "sha-{{ cicd.containers.dspace_sha }}"
+    docker_stack:
+      name: digital_collection
+      state: present
+      # Prune means that only services in the stack definition are present. Older services will be automatically removed.
+      prune: true
+      compose: 
+      - "{{ lookup('file', './services/stack-extraction-dspace.yaml' ) | from_yaml }}"
+
   # Deploy the authentication Service
   - name: deploy authomator middleware stack from file
     # The environment variable tells docker_stack any changed CONFIGNAME
@@ -104,7 +126,18 @@
       compose: 
       - "{{ lookup('file', './services/stack-authomator.yaml' ) | from_yaml }}"
 
-  # Deploy the Service
+  - name: deploy ad-resolver services
+    environment:
+      CONFIGNAME: "{{ adresolver_config.secret_name }}"
+      IMAGETAG: "sha-{{ cicd.containers.adresolver_sha }}"
+    docker_stack:
+      name: autho
+      state: present
+      prune: true
+      compose: 
+      - "{{ lookup('file', './services/stack-ad-resolver.yaml' ) | from_yaml }}"
+
+  # Deploy the main Service
   - name: deploy reverse proxy stack from file
     # The environment variable tells docker_stack any changed CONFIGNAME
     # 
