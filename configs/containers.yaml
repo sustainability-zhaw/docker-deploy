@@ -1,8 +1,8 @@
 containers:
-  dashboard_sha: cebc8d3
-  adresolver_sha: 4481b4a
+  dashboard_sha: 8b07ad0
+  adresolver_sha: abbee7e
   schema_sha: cd0f0d0
   authomator_sha: df07b2d
-  dspace_sha: 3b35849
+  dspace_sha: '7735624'
   evento_sha: 49ca18e
   sdgindexer_sha: cc8c0fb
