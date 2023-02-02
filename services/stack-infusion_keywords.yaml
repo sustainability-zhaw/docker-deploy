@@ -1,0 +1,19 @@
+version: "3.8"
+services:
+  infusion:
+    image: ghcr.io/sustainability-zhaw/keywords:${IMAGETAG}
+    # run once
+    # restart: "no"
+    deploy:
+      restart_policy:
+        condition: none
+    networks:
+      - sdgservices
+    environment:
+      DB_URI:  http://dgraph_standalone:8080/graphql
+      CLEANUP: 'yes'
+
+networks: 
+  sdgservices: 
+    external: true
+ 

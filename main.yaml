@@ -89,6 +89,18 @@
       compose: 
       - "{{ lookup('file', './services/stack-dgraph_standalone.yaml' ) | from_yaml }}"
   
+  - name: infuse SDG Keywords from GH 
+    environment:
+    #   CONFIGNAME: "{{ sdgwebconfig.config_name }}"
+      IMAGETAG: "sha-{{ cicd.containers.keywords }}"
+    docker_stack:
+      name: sdgidx
+      state: present
+      # Prune means that only services in the stack definition are present. Older services will be automatically removed.
+      prune: true
+      compose: 
+      - "{{ lookup('file', './services/stack-infusion_keywords.yaml' ) | from_yaml }}"
+
   - name: deploy sdg frontend stack from file
     environment:
       CONFIGNAME: "{{ sdgwebconfig.config_name }}"
