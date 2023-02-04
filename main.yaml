@@ -11,7 +11,7 @@
 
   - name: load container sha from config
     include_vars:
-      file: ./configs/containers.yaml
+      file: /configs/containers.yaml
       name: cicd
 
   # Setup External Networks
@@ -71,7 +71,7 @@
     register: sdgwebconfig
     docker_config:
       name: sdgweb_config
-      data: "{{ lookup('file', './configs/dashboard_config.json' ) | from_json | to_json }}"
+      data: "{{ lookup('file', '/configs/dashboard_config.json' ) | from_json | to_json }}"
       rolling_versions: true
       versions_to_keep: 2
       state: present
@@ -81,6 +81,15 @@
     docker_config:
       name: sdgindexer_config
       data: "{{ lookup('file', '/configs/services/indexer/config.json' ) | from_json | to_json }}"
+      rolling_versions: true
+      versions_to_keep: 2
+      state: present
+
+  - name: setup graphiql
+    register: graphiql
+    docker_config:
+      name: tool_graphiql
+      data: "{{ lookup('file', '/configs/graphiql/index.html' ) }}"
       rolling_versions: true
       versions_to_keep: 2
       state: present
@@ -168,6 +177,16 @@
       prune: true
       compose: 
       - "{{ lookup('file', './services/stack-sdg-indexer.yaml' ) | from_yaml }}"
+
+  - name: deploy graphiql service
+    environment:
+      CONFIGNAME: "{{ graphiql.config_name }}"
+    docker_stack:
+      name: gql
+      state: present
+      prune: true
+      compose: 
+      - "{{ lookup('file', './services/stack-gql-helper.yaml' ) | from_yaml }}"
 
   # Deploy the main Service
   - name: deploy reverse proxy stack from file

@@ -1,0 +1,19 @@
+version: "3.8"
+services:
+  helper:
+    image: caddy:2.6.2
+    networks:
+      - sdgservices
+    configs:
+      - source: sdgweb_config
+        target: /usr/share/caddy/index.html
+
+networks: 
+  sdgservices: 
+    external: true
+
+configs: 
+  sdgweb_config:
+    external: true
+    name: ${CONFIGNAME}
+
