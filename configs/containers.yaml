@@ -1,9 +1,9 @@
 containers:
-  dashboard_sha: 0dc17b7
-  adresolver_sha: abbee7e
-  schema_sha: cd0f0d0
+  dashboard_sha: ed4599d
+  adresolver_sha: b73cba8
+  schema_sha: c55b434
   authomator_sha: df07b2d
-  dspace_sha: '7735624'
-  evento_sha: 49ca18e
-  sdgindexer_sha: cc8c0fb
-  keywords: 7dc5aca
+  dspace_sha: e48a854
+  evento_sha: d58f8d3
+  sdgindexer_sha: '5419011' 
+  keywords: e377c74
