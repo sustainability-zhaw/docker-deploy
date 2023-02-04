@@ -172,7 +172,7 @@
       CONFIGNAME: "{{ sdgindexer_config.config_name }}"
       IMAGETAG: "sha-{{ cicd.containers.sdgindexer }}"
     docker_stack:
-      name: activedirectory
+      name: sdg
       state: present
       prune: true
       compose: 
