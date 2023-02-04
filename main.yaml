@@ -76,6 +76,15 @@
       versions_to_keep: 2
       state: present
 
+  - name: setup sdg indexer configs
+    register: sdgindexer_config
+    docker_config:
+      name: sdgindexer_config
+      data: "{{ lookup('file', '/configs/services/indexer/config.json' ) | from_json | to_json }}"
+      rolling_versions: true
+      versions_to_keep: 2
+      state: present
+
   # Deploy the content Services
 
   - name: deploy dgraph
@@ -148,6 +157,17 @@
       prune: true
       compose: 
       - "{{ lookup('file', './services/stack-ad-resolver.yaml' ) | from_yaml }}"
+
+  - name: deploy sdg indexing service
+    environment:
+      CONFIGNAME: "{{ sdgindexer_config.config_name }}"
+      IMAGETAG: "sha-{{ cicd.containers.sdgindexer }}"
+    docker_stack:
+      name: activedirectory
+      state: present
+      prune: true
+      compose: 
+      - "{{ lookup('file', './services/stack-sdg-indexer.yaml' ) | from_yaml }}"
 
   # Deploy the main Service
   - name: deploy reverse proxy stack from file
