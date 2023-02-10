@@ -1,7 +1,7 @@
 version: "3.8"
 services:
   infusion:
-    image: ghcr.io/sustainability-zhaw/keywords:${IMAGETAG}
+    image: ghcr.io/sustainability-zhaw/keyword-webhook:${IMAGETAG}
     # run once
     # restart: "no"
     deploy:
