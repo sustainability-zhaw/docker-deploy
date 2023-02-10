@@ -85,6 +85,15 @@
       versions_to_keep: 2
       state: present
 
+  - name: setup keyword webhook configs
+    register: webhookconfig
+    docker_secret:
+      name: webhook_config
+      data: "{{ lookup('file', '/configs/services/webhook/config.json' ) | from_json | to_json }}"
+      rolling_versions: true
+      versions_to_keep: 2
+      state: present
+
   - name: setup graphiql
     register: graphiql
     docker_config:
@@ -109,7 +118,7 @@
   
   - name: infuse SDG Keywords from GH 
     environment:
-    #   CONFIGNAME: "{{ sdgwebconfig.config_name }}"
+      CONFIGNAME: "{{ webhookconfig.secret_name }}"
       IMAGETAG: "sha-{{ cicd.containers.keywords }}"
     docker_stack:
       name: sdgidx

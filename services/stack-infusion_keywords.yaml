@@ -9,11 +9,16 @@ services:
         condition: none
     networks:
       - sdgservices
-    environment:
-      DB_URI:  http://dgraph_standalone:8080/graphql
-      CLEANUP: 'yes'
+    secrets:
+      - source: resolver_config
+        target: /etc/app/config.json
 
 networks: 
   sdgservices: 
     external: true
+
+secrets: 
+  resolver_config:
+    external: true
+    name: ${CONFIGNAME} 
  
