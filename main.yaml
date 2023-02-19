@@ -104,6 +104,14 @@
       state: present
 
   # Deploy the content Services
+  
+  - name: deploy message queue
+    docker_stack:
+      name: mq
+      state: present
+      prune: true
+      compose: 
+      - "{{ lookup('file', './services/stack-rabbitmq.yaml' ) | from_yaml }}"
 
   - name: deploy dgraph
     environment:

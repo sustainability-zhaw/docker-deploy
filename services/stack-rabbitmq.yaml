@@ -1,0 +1,11 @@
+version: "3.8"
+services:
+  main:
+    image: rabbitmq:3.11-alpine
+    # restart: always
+    networks:
+      - sdgservices
+    
+networks: 
+  sdgservices: 
+    external: true
