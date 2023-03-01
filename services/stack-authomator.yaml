@@ -8,11 +8,22 @@ services:
     secrets:
       - source: autho_config
         target: /etc/authomator/config.yaml
+  
+  devautho:
+    image: ghcr.io/phish108/authomator:${IMAGETAG}
+    networks:
+      - sdgservices
+    secrets:
+      - source: devautho_config
+        target: /etc/authomator/config.yaml
 
 secrets: 
   autho_config:
     external: true
     name: ${CONFIGNAME}
+  devautho_config:
+    external: true
+    name: ${DEVCONFIGNAME}
 
 networks: 
   sdgservices: 
