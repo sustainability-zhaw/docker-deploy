@@ -62,7 +62,7 @@
     register: authokeys
     docker_secret:
       name: autho_keys
-      data: "{{ lookup('file', '/configs/services/authomator/keys.jwks' ) }}"
+      data: "{{ lookup('file', '/configs/services/authomator/keys.jwks' ) | from_json | to_json }}"
       rolling_versions: true
       versions_to_keep: 2
       state: present
@@ -71,7 +71,7 @@
     register: authokeys_dev
     docker_secret:
       name: autho_keys_dev
-      data: "{{ lookup('file', '/configs/services/authomator/keys_dev.jwks' ) }}"
+      data: "{{ lookup('file', '/configs/services/authomator/keys_dev.jwks' ) | from_json | to_json }}"
       rolling_versions: true
       versions_to_keep: 2
       state: present

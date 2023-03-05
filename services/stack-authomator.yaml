@@ -15,7 +15,7 @@ secrets:
   autho_config:
     external: true
     name: ${CONFIGNAME}
-  privjwks:
+  privkeys:
     external: true
     name: ${KEYSNAME}
 
