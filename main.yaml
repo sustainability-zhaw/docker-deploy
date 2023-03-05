@@ -49,6 +49,33 @@
       versions_to_keep: 2
       state: present
 
+  - name: setup authomator dev configs
+    register: authoconfig_dev
+    docker_secret:
+      name: autho_config_dev
+      data: "{{ lookup('file', '/configs/services/authomator/authomator_config_dev.yaml' ) }}"
+      rolling_versions: true
+      versions_to_keep: 2
+      state: present
+
+  - name: setup authomator keys
+    register: authokeys
+    docker_secret:
+      name: autho_keys
+      data: "{{ lookup('file', '/configs/services/authomator/keys.jwks' ) }}"
+      rolling_versions: true
+      versions_to_keep: 2
+      state: present
+
+  - name: setup authomator dev keys
+    register: authokeys_dev
+    docker_secret:
+      name: autho_keys_dev
+      data: "{{ lookup('file', '/configs/services/authomator/keys_dev.jwks' ) }}"
+      rolling_versions: true
+      versions_to_keep: 2
+      state: present
+
   - name: setup ad-resolver configs
     register: adresolver_config
     docker_secret:
@@ -165,11 +192,26 @@
     # The environment variable tells docker_stack any changed CONFIGNAME
     environment:
       CONFIGNAME: "{{ authoconfig.secret_name }}"
+      KEYSNAME: "{{ authokeys.secret_name }}"
       IMAGETAG: "sha-{{ cicd.containers.authomator_sha }}"
     docker_stack:
       name: autho
       state: present
       prune: true
+      compose: 
+      - "{{ lookup('file', './services/stack-authomator.yaml' ) | from_yaml }}"
+
+  - name: deploy authomator dev middleware stack from file
+    # The environment variable tells docker_stack any changed CONFIGNAME
+    environment:
+      CONFIGNAME: "{{ authoconfig_dev.secret_name }}"
+      KEYSNAME: "{{ authokeys_dev.secret_name }}"
+      IMAGETAG: "sha-{{ cicd.containers.authomator_dev }}"
+    docker_stack:
+      name: authodev
+      state: present
+      prune: true
+      # NOTE the dev and prod services use the same compose file for deployment!
       compose: 
       - "{{ lookup('file', './services/stack-authomator.yaml' ) | from_yaml }}"
 
