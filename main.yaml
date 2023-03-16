@@ -76,6 +76,15 @@
       versions_to_keep: 2
       state: present
 
+  - name: setup download gateway configs
+    register: download_gateway_config
+    docker_secret:
+      name: autho_config_dev
+      data: "{{ lookup('file', '/configs/services/download_gateway/config.yaml' ) }}"
+      rolling_versions: true
+      versions_to_keep: 2
+      state: present
+
   - name: setup ad-resolver configs
     register: adresolver_config
     docker_secret:
@@ -237,6 +246,17 @@
       compose: 
       - "{{ lookup('file', './services/stack-sdg-indexer.yaml' ) | from_yaml }}"
 
+  - name: deploy download gateway
+    environment:
+      CONFIGNAME: "{{ download_gateway_config.config_name }}"
+      IMAGETAG: "sha-{{ cicd.containers.dlgateway }}"
+    docker_stack:
+      name: dogateway
+      state: present
+      prune: true
+      compose: 
+      - "{{ lookup('file', './services/stack-download-gateway.yaml' ) | from_yaml }}"
+  
   - name: deploy graphiql service
     environment:
       CONFIGNAME: "{{ graphiql.config_name }}"
