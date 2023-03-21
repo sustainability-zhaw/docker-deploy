@@ -1,8 +1,6 @@
-version: 3.8
+version: "3.8"
 services:
   gateway: 
-    autho:
-    # image: ghcr.io/phish108/authomator:sha-df07b2d
     image: ghcr.io/sustainability-zhaw/download-gateway:sha-${IMAGETAG}
     networks:
     - sdgservices
