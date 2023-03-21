@@ -1,13 +1,13 @@
 version: 3.8
 services:
-  dlgw: 
+  gateway: 
     autho:
     # image: ghcr.io/phish108/authomator:sha-df07b2d
     image: ghcr.io/sustainability-zhaw/download-gateway:sha-${IMAGETAG}
     networks:
     - sdgservices
     configs:
-    - source: dlgw_config
+    - source: service_config
       target: /etc/app/config.yaml
 
 networks:
@@ -15,7 +15,7 @@ networks:
     external: true
 
 configs:
-  dlgw_config:
+  service_config:
     external: true
     name: ${CONFIGNAME}
     

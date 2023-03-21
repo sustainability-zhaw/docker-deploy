@@ -39,8 +39,8 @@
       rolling_versions: true
       versions_to_keep: 2
       state: present
-   
-  - name: setup authomator configs
+
+  - name: setup authomator secrets
     register: authoconfig
     docker_secret:
       name: autho_config
@@ -49,7 +49,7 @@
       versions_to_keep: 2
       state: present
 
-  - name: setup authomator dev configs
+  - name: setup authomator dev secrets
     register: authoconfig_dev
     docker_secret:
       name: autho_config_dev
@@ -76,16 +76,7 @@
       versions_to_keep: 2
       state: present
 
-  - name: setup download gateway configs
-    register: download_gateway_config
-    docker_secret:
-      name: autho_config_dev
-      data: "{{ lookup('file', '/configs/services/download_gateway/config.yaml' ) }}"
-      rolling_versions: true
-      versions_to_keep: 2
-      state: present
-
-  - name: setup ad-resolver configs
+  - name: setup ad-resolver secrets
     register: adresolver_config
     docker_secret:
       name: adresolver_config
@@ -94,11 +85,20 @@
       versions_to_keep: 2
       state: present
 
-  - name: setup dspace_extractor config for digital collection
+  - name: setup dspace_extractor secrets for digital collection
     register: dspace_extractor_config
     docker_secret:
       name: dspace_extractor_config
       data: "{{ lookup('file', '/configs/services/extractor/digital_collection.json' ) | from_json | to_json }}"
+      rolling_versions: true
+      versions_to_keep: 2
+      state: present
+
+  - name: setup keyword webhook secrets
+    register: webhookconfig
+    docker_secret:
+      name: webhook_config
+      data: "{{ lookup('file', '/configs/services/webhook/config.json' ) | from_json | to_json }}"
       rolling_versions: true
       versions_to_keep: 2
       state: present
@@ -121,11 +121,11 @@
       versions_to_keep: 2
       state: present
 
-  - name: setup keyword webhook configs
-    register: webhookconfig
-    docker_secret:
-      name: webhook_config
-      data: "{{ lookup('file', '/configs/services/webhook/config.json' ) | from_json | to_json }}"
+  - name: setup download gateway configs
+    register: download_gateway_config
+    docker_config:
+      name: download_gateway
+      data: "{{ lookup('file', '/configs/services/download_gateway/config.yaml' ) }}"
       rolling_versions: true
       versions_to_keep: 2
       state: present
@@ -251,7 +251,7 @@
       CONFIGNAME: "{{ download_gateway_config.config_name }}"
       IMAGETAG: "sha-{{ cicd.containers.dlgateway }}"
     docker_stack:
-      name: dogateway
+      name: download
       state: present
       prune: true
       compose: 
