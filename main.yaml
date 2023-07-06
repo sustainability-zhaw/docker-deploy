@@ -94,6 +94,15 @@
       versions_to_keep: 2
       state: present
 
+  - name: setup secrets for the project db
+    register: projects_extractor_config
+    docker_secret:
+      name: projects_extractor_config
+      data: "{{ lookup('file', '/configs/services/extractor/projects.json' ) | from_json | to_json }}"
+      rolling_versions: true
+      versions_to_keep: 2
+      state: present
+
   - name: setup keyword webhook secrets
     register: webhookconfig
     docker_secret:
@@ -195,6 +204,18 @@
       prune: true
       compose: 
       - "{{ lookup('file', './services/stack-extraction-dspace.yaml' ) | from_yaml }}"
+
+  - name: deploy project db extractor
+    environment:
+      CONFIGNAME: "{{ projects_extractor_config.secret_name }}"
+      IMAGETAG: "sha-{{ cicd.containers.projects_sha }}"
+    docker_stack:
+      name: digital_collection
+      state: present
+      # Prune means that only services in the stack definition are present. Older services will be automatically removed.
+      prune: true
+      compose: 
+      - "{{ lookup('file', './services/stack-extraction-projects.yaml' ) | from_yaml }}"
 
   # Deploy the authentication Service
   - name: deploy authomator middleware stack from file
