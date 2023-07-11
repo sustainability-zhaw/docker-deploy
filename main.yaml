@@ -210,7 +210,7 @@
       CONFIGNAME: "{{ projects_extractor_config.secret_name }}"
       IMAGETAG: "sha-{{ cicd.containers.projects_sha }}"
     docker_stack:
-      name: digital_collection
+      name: projects
       state: present
       # Prune means that only services in the stack definition are present. Older services will be automatically removed.
       prune: true
