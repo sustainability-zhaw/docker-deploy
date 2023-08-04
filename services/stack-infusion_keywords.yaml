@@ -4,9 +4,9 @@ services:
     image: ghcr.io/sustainability-zhaw/keyword-webhook:${IMAGETAG}
     # run once
     # restart: "no"
-    deploy:
-      restart_policy:
-        condition: none
+    # deploy:
+    #   restart_policy:
+    #     condition: any
     networks:
       - sdgservices
     secrets:
