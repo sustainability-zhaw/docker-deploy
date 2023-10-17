@@ -12,7 +12,7 @@ services:
     deploy:
       placement:
         constraints:
-          - node.hostname==${HOST_CONSTRAINT}
+          - node.hostname == ${HOST_CONSTRAINT}
 
   initializer: 
     image: ghcr.io/sustainability-zhaw/dgraph-schema:sha-${DB_INIT}
