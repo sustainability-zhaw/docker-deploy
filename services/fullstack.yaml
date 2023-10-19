@@ -1,0 +1,139 @@
+services:
+  mq: 
+    image: rabbitmq:3.12-management
+    networks:
+      - servicenet
+
+  autho:
+    image: ghcr.io/phish108/authomator:${AUTHOMATOR_SHA}
+    networks:
+      - servicenet
+    secrets:
+      - source: autho_config
+        target: /etc/authomator/config.yaml
+      - source: autho_privkeys
+        target: /etc/authomator/private.jwks
+
+  dashboard:
+    image: ghcr.io/sustainability-zhaw/sustainability-dashboard:${DASHBOARD_SHA}
+    networks:
+    - servicenet
+    configs:
+    - source: sdconfig
+      target: /usr/share/caddy/config.json
+
+  dlgw: 
+    image: ghcr.io/sustainability-zhaw/download-gateway:${DLGW_SHA}
+    networks:
+    - servicenet
+    configs:
+    - source: dlgwconfig
+      target: /etc/app/config.yaml
+
+  kwwebhook:
+    image: ghcr.io/sustainability-zhaw/keyword-webhook:${KWWEBHOOK_SHA}
+    networks:
+      - servicenet
+    secrets:
+      - source: kwconfig
+        target: /etc/app/config.json
+
+  dc_importer: 
+    image: ghcr.io/sustainability-zhaw/extraction-dspace:${IMPORT_DC_SHA}
+    networks:
+      - servicenet
+    secrets:
+      - source: dcconfig
+        target: /etc/app/config.json
+ 
+  project_importer: 
+    image: ghcr.io/sustainability-zhaw/extraction-projects:${IMPORT_PR_SHA}
+    networks:
+      - servicenet
+    secrets:
+      - source: prconfig
+        target: /etc/app/config.json
+
+  adresolver: 
+    image: ghcr.io/sustainability-zhaw/ad-resolver:${IMPORT_AD_SHA}
+    networks:
+      - servicenet
+    secrets:
+      - source: adconfig
+        target: /etc/app/secrets.json
+ 
+  indexer: 
+    image: ghcr.io/sustainability-zhaw/sdg-indexer:${INDEXER_SHA}
+    networks:
+      - servicenet
+    configs:
+      - source: indexerconfig
+        target: /etc/app/config.json
+      
+  proxy:
+    image: caddy:2.7.5
+    networks:
+      - servicenet
+    ports:
+      - target: 80
+        published: 80
+      - target: 443
+        published: 443
+    configs:
+      - source: proxyconfig
+        target: /etc/caddy/Caddyfile
+    volumes:
+      - proxy_config:/config
+
+  graphiql: 
+     image: caddy:2.7.5
+     networks:
+      - servicenet
+     configs:
+      - source: gqlindex
+        target: /usr/share/caddy/index.html
+
+networks:
+  servicenet:
+    external: true
+    name: ${STACK_NETWORK}
+
+configs:
+  proxyconfig:
+    external: true
+    name: ${PROXY_CONFIG}
+  sdconfig:
+    external: true
+    name: ${DASHBOARD_CONFIG}
+  indexerconfig:
+    external: true
+    name: ${INDEXER_CONFIG}
+  dlgwconfig:
+    external: true
+    name: ${DLGW_CONFIG}
+  gqlindex:
+    external: true
+    name: ${GRAPHIQL_INDEX}
+
+secrets: 
+  dcconfig:
+    external: true
+    name: ${IMPORTER_DC_CONFIG}
+  prconfig:
+    external: true
+    name: ${IMPORTER_PR_CONFIG}
+  adconfig:
+    external: true
+    name: ${ADRESOLVER_CONFIG}
+  autho_config:
+    external: true
+    name: ${AUTHO_CONFIG}
+  autho_privkeys:
+    external: true
+    name: ${AUTHOKEYS}
+  kwconfig:
+    external: true
+    name: ${IMPORTER_KW_CONFIG}
+
+volumes:
+  proxy_config:

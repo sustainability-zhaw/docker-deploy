@@ -113,7 +113,7 @@
       state: present
 
   - name: setup dashboard configs
-    register: sdgwebconfig
+    register: dashboardconfig
     docker_config:
       name: sdgweb_config
       data: "{{ lookup('file', '/configs/dashboard_config.json' ) | from_json | to_json }}"
@@ -149,155 +149,62 @@
       state: present
 
   # Deploy the content Services
-  
-  - name: deploy message queue
-    docker_stack:
-      name: mq
-      state: present
-      prune: true
-      compose: 
-      - "{{ lookup('file', './services/stack-rabbitmq.yaml' ) | from_yaml }}"
-
-  - name: deploy dgraph
+  - name: deploy the DB stack
     environment:
-      HOST_CONSTRAINT: "{{ sdg_config.dgraph.constraints.host }}"
-      DB_INIT: "{{ cicd.containers.schema_sha }}"
+      # Network names
+      STACK_NETWORK: sdgservices
+      # Image tags
+      DBINIT_SHA: "sha-{{ cicd.containers.schema_sha }}"
+      # Constraints
+      DBHOST_CONSTRAINT: "{{ sdg_config.dgraph.constraints.host }}"
+      # Configs & Secrets
     docker_stack:
       name: dgraph
       state: present
+      # state: absent # uninstall the stack
       prune: true
       compose: 
-      - "{{ lookup('file', './services/stack-dgraph_standalone.yaml' ) | from_yaml }}"
+      - "{{ lookup('file', './services/dgraph.yaml' ) | from_yaml }}"
+
+  ##
+  # wait a few moments for the db to come up, if it changed
+
+  # deploy the rest of the stack
+  - name: deploy the service stack
+    environment:
+      # Network names
+      STACK_NETWORK: sdgservices
   
-  - name: infuse SDG Keywords from GH 
-    environment:
-      CONFIGNAME: "{{ webhookconfig.secret_name }}"
-      IMAGETAG: "sha-{{ cicd.containers.keywords }}"
-    docker_stack:
-      name: sdgidx
-      state: present
-      # Prune means that only services in the stack definition are present. Older services will be automatically removed.
-      prune: true
-      compose: 
-      - "{{ lookup('file', './services/stack-infusion_keywords.yaml' ) | from_yaml }}"
-
-  - name: deploy sdg frontend stack from file
-    environment:
-      CONFIGNAME: "{{ sdgwebconfig.config_name }}"
-      IMAGETAG: "sha-{{ cicd.containers.dashboard_sha }}"
-    docker_stack:
-      name: sdgfrontend
-      state: present
-      # Prune means that only services in the stack definition are present. Older services will be automatically removed.
-      prune: true
-      compose: 
-      - "{{ lookup('file', './services/stack-sdgfrontend.yaml' ) | from_yaml }}"
-
-  - name: deploy digital collection extractor
-    environment:
-      CONFIGNAME: "{{ dspace_extractor_config.secret_name }}"
-      IMAGETAG: "sha-{{ cicd.containers.dspace_sha }}"
-    docker_stack:
-      name: digital_collection
-      state: present
-      # Prune means that only services in the stack definition are present. Older services will be automatically removed.
-      prune: true
-      compose: 
-      - "{{ lookup('file', './services/stack-extraction-dspace.yaml' ) | from_yaml }}"
-
-  - name: deploy project db extractor
-    environment:
-      CONFIGNAME: "{{ projects_extractor_config.secret_name }}"
-      IMAGETAG: "sha-{{ cicd.containers.projects_sha }}"
-    docker_stack:
-      name: projects
-      state: present
-      # Prune means that only services in the stack definition are present. Older services will be automatically removed.
-      prune: true
-      compose: 
-      - "{{ lookup('file', './services/stack-extraction-projects.yaml' ) | from_yaml }}"
-
-  # Deploy the authentication Service
-  - name: deploy authomator middleware stack from file
-    # The environment variable tells docker_stack any changed CONFIGNAME
-    environment:
-      CONFIGNAME: "{{ authoconfig.secret_name }}"
-      KEYSNAME: "{{ authokeys.secret_name }}"
-      IMAGETAG: "sha-{{ cicd.containers.authomator_sha }}"
-    docker_stack:
-      name: autho
-      state: present
-      prune: true
-      compose: 
-      - "{{ lookup('file', './services/stack-authomator.yaml' ) | from_yaml }}"
-
-  - name: deploy authomator dev middleware stack from file
-    # The environment variable tells docker_stack any changed CONFIGNAME
-    environment:
-      CONFIGNAME: "{{ authoconfig_dev.secret_name }}"
-      KEYSNAME: "{{ authokeys_dev.secret_name }}"
-      IMAGETAG: "sha-{{ cicd.containers.authomator_dev }}"
-    docker_stack:
-      name: authodev
-      state: present
-      prune: true
-      # NOTE the dev and prod services use the same compose file for deployment!
-      compose: 
-      - "{{ lookup('file', './services/stack-authomator.yaml' ) | from_yaml }}"
-
-  - name: deploy ad-resolver services
-    environment:
-      CONFIGNAME: "{{ adresolver_config.secret_name }}"
-      IMAGETAG: "sha-{{ cicd.containers.adresolver_sha }}"
-    docker_stack:
-      name: activedirectory
-      state: present
-      prune: true
-      compose: 
-      - "{{ lookup('file', './services/stack-ad-resolver.yaml' ) | from_yaml }}"
-
-  - name: deploy sdg indexing service
-    environment:
-      CONFIGNAME: "{{ sdgindexer_config.config_name }}"
-      IMAGETAG: "sha-{{ cicd.containers.sdgindexer }}"
+      # Image tags
+      DLGW_SHA: "sha-{{ cicd.containers.dlgateway }}"
+      IMPORT_AD_SHA: "sha-{{ cicd.containers.adresolver_sha }}"
+      KWWEBHOOK_SHA: "sha-{{ cicd.containers.keywords }}"
+      DASHBOARD_SHA: "sha-{{ cicd.containers.dashboard_sha }}"
+      IMPORT_DC_SHA: "sha-{{ cicd.containers.dspace_sha }}"
+      IMPORT_PR_SHA: "sha-{{ cicd.containers.projects_sha }}"
+      AUTHOMATOR_SHA: "sha-{{ cicd.containers.authomator_sha }}"
+      # DBINIT_SHA: "{{ cicd.containers.schema_sha }}"
+      INDEXER_SHA: "sha-{{ cicd.containers.sdgindexer }}"
+  
+      # Configs
+      DASHBOARD_CONFIG: "{{ dashboardconfig.config_name }}"
+      INDEXER_CONFIG: "{{ sdgindexer_config.config_name }}"
+      DLGW_CONFIG: "{{ download_gateway_config.config_name }}"
+      GRAPHIQL_INDEX: "{{ graphiql.config_name }}"
+      PROXY_CONFIG: "{{ proxyconfig.config_name }}"
+  
+      # Secrets
+      ADRESOLVER_CONFIG: "{{ adresolver_config.secret_name }}"
+      IMPORTER_KW_CONFIG: "{{ webhookconfig.secret_name }}"
+      IMPORTER_DC_CONFIG: "{{ dspace_extractor_config.secret_name }}"
+      IMPORTER_PR_CONFIG: "{{ projects_extractor_config.secret_name }}"
+      AUTHO_CONFIG: "{{ authoconfig.secret_name }}"
+      AUTHOKEYS: "{{ authokeys.secret_name }}"
+      
     docker_stack:
       name: sdg
       state: present
+      # state: absent # uninstall the stack
       prune: true
       compose: 
-      - "{{ lookup('file', './services/stack-sdg-indexer.yaml' ) | from_yaml }}"
-
-  - name: deploy download gateway
-    environment:
-      CONFIGNAME: "{{ download_gateway_config.config_name }}"
-      IMAGETAG: "sha-{{ cicd.containers.dlgateway }}"
-    docker_stack:
-      name: download
-      state: present
-      prune: true
-      compose: 
-      - "{{ lookup('file', './services/stack-download-gateway.yaml' ) | from_yaml }}"
-  
-  - name: deploy graphiql service
-    environment:
-      CONFIGNAME: "{{ graphiql.config_name }}"
-    docker_stack:
-      name: gql
-      state: present
-      prune: true
-      compose: 
-      - "{{ lookup('file', './services/stack-gql-helper.yaml' ) | from_yaml }}"
-
-  # Deploy the main Service
-  - name: deploy reverse proxy stack from file
-    # The environment variable tells docker_stack any changed CONFIGNAME
-    # 
-    environment:
-      CONFIGNAME: "{{ proxyconfig.config_name }}"
-    docker_stack:
-      name: web
-      state: present
-      # Prune means that only services in the stack definition are present. Older services will be automatically removed.
-      prune: true
-      compose: 
-      - "{{ lookup('file', './services/stack-reverse-proxy.yaml' ) | from_yaml }}"
+      - "{{ lookup('file', './services/fullstack.yaml' ) | from_yaml }}"

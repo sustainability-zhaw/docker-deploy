@@ -1,0 +1,35 @@
+services:
+  db:
+    # hostname: dgraph_standalone # Hardcoded in db_init entrypoint.sh
+    image: dgraph/standalone:v22.0.2
+    networks:
+      - servicenet
+    volumes:
+      - type: volume
+        source: dgraph
+        target: /dgraph
+    deploy:
+      placement:
+        constraints:
+          - node.hostname == ${DBHOST_CONSTRAINT}
+  
+  db_init:
+    image: ghcr.io/sustainability-zhaw/dgraph-schema:${DBINIT_SHA}
+    networks:
+      - servicenet
+    environment:
+      TIMEOUT: 20
+      DGRAPH_SERVER: http://db:8080
+    deploy:
+      restart_policy:
+        condition: none
+
+networks:
+  servicenet:
+    external: true
+    name: ${STACK_NETWORK}
+
+volumes:
+  dgraph:
+    external: true
+    name: dgraph
