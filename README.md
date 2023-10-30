@@ -4,9 +4,11 @@ An Ansible playbook for deploying the SDG Dashboard to a Docker Swarm.
 
 This is part of the open deployment strategy. This strategy consists of three repositories: 
 
-1. The System Inventory
+1. The System Inventory 
 2. The Support Files
 3. The Ansible Playbook (this repository)
+
+**Important** Both the System Inventory and the Support Files are and remain private.
 
 ## Deployment
 
@@ -31,12 +33,7 @@ It is recommended to have two separate ***private*** repositories for these purp
 
 The first repository should hold the host inventory of the docker swarm. This repository needs to provide the file `/inventory/main.yaml` and `/inventory/known_hosts` to the playbook.
 
-The second repository needs to provide the following files:
-
-- `Caddyfile` - for configuring the reverse proxy.
-- configuration files for the different components. Namely: ad_resolver, authomator, extractor, indexer, and webhook. 
-- `configs.yaml` - for providing configuration options for for the different components. 
-- `containers.yaml` - with the latest container sha for the deployment.
+The second repository needs to provide the support files with the service configuration.
 
 The playbook `main.yaml` expects these files under `/configs`.
 
@@ -66,9 +63,9 @@ The layout of the inventory configs is as follows:
   - `webhook`
     - `config.json` - configuration for the keywords-webhook endpoint (!! contains credentials !!)
 
- Structure of the `containers.yaml` file: 
+The Structure of the `containers.yaml` file: 
 
- ```yaml
+```yaml
 containers:
   dashboard_sha: 7d191b6
   adresolver_sha: b73cba8
@@ -78,4 +75,6 @@ containers:
   evento_sha: d58f8d3
   sdgindexer: 459a702
   keywords: 44ddb4e
- ```
+```
+
+The containers.yaml file provides the reference to the the most recent versions of the service containers. 
