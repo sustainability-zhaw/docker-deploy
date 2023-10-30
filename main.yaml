@@ -4,20 +4,22 @@
   hosts: mainnode
 
   tasks:
-  - name: load packages from config
+  - name: Load service configuration
     include_vars:
       file: /configs/configs.yaml
       name: sdg_config
 
-  - name: load container sha from config
+  - name: Load container sha from config
     include_vars:
       file: /configs/containers.yaml
       name: cicd
 
+  ##
   # Setup External Networks
+  #
   # https://docs.ansible.com/ansible/latest/collections/community/docker/docker_network_module.html
 
-  - name: setup caddyadmin network
+  - name: Setup service networks
     docker_network:
       name: "{{ item }}"
       attachable: true
@@ -28,12 +30,14 @@
       state: present
     loop: "{{ sdg_config.networks }}"
 
+  ## 
   # Setup Configs
+  # 
   # https://docs.ansible.com/ansible/latest/collections/community/docker/docker_config_module.html
 
-  # `lookup() | string` tells ansible not to parse the data but use it as is.
+  # `lookup() | string` tells ansible not to parse any of the data but use it as is.
 
-  - name: setup docker configs
+  - name: Setup docker configs
     register: docker_configs
     docker_config:
       name: "{{ item.key }}"
@@ -45,7 +49,7 @@
     loop_control:
       label: "{{ item.key }}"
 
-  - name: setup docker secrets
+  - name: Setup docker secrets
     register: docker_secrets
     docker_secret:
       name: "{{ item.key }}"
@@ -60,19 +64,21 @@
   ## 
   # Flatten the result lists into simple dicts.
   #
+  # This step helps the stack deployment.
+  #
   # The configs and secret setup results are not usefull for selecting envionrment variables
   # so we create a dict for each of them
   #
   # The two types are kept separately here for debugging purposes. 
   #
-  - name: create config dict
+  - name: Create dict with config names
     set_fact:
       dconfigs: "{{ dconfigs | default({}) | combine( {item.invocation.module_args.name : item.config_name} ) }}"
     loop: "{{ docker_configs.results }}"
     loop_control:
       label: "{{ item.invocation.module_args.name }}"
 
-  - name: create secrets dict
+  - name: Create dict with secret names
     set_fact:
       dsecrets: "{{ dsecrets | default({}) | combine( {item.invocation.module_args.name : item.secret_name} ) }}"
     loop: "{{ docker_secrets.results }}"
@@ -81,9 +87,14 @@
 
   ##
   # Stack deployment
+  #
+  # https://docs.ansible.com/ansible/latest/collections/community/docker/docker_stack_module.html
 
-  # Deploy the content Services
-  - name: deploy the DB stack
+  # Deploy the DB Services
+  #
+  # These services must be deployed separately because the DB (cluster) needs to launch
+  # and the initialisation needs to complete before any of the other services appears
+  - name: Deploy the DB stack
     environment:
       # Network names
       STACK_NETWORK: sdgservices
@@ -100,11 +111,14 @@
       compose: 
       - "{{ lookup('file', './services/dgraph.yaml' ) | from_yaml }}"
 
-  ##
-  # wait a few moments for the db to come up, if it changed
+  #
+  # Wait a few moments for the db to come up, if it changed
+  # 
+  # Normally this happens just by waiting for the stack to be deployed.
+  # 
 
-  # deploy the rest of the stack
-  - name: deploy the service stack
+  # Deploy the rest of the stack
+  - name: Deploy the service stack
     environment:
       # Network names
       STACK_NETWORK: sdgservices
