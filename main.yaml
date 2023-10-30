@@ -26,127 +26,54 @@
       driver_options: 
         encrypted: ""
       state: present
-    with_items: "{{ sdg_config.networks }}"
+    loop: "{{ sdg_config.networks }}"
 
   # Setup Configs
   # https://docs.ansible.com/ansible/latest/collections/community/docker/docker_config_module.html
 
-  - name: setup proxy configs
-    register: proxyconfig
+  - name: setup docker configs
+    register: docker_configs
     docker_config:
-      name: proxy_caddyfile
-      data: "{{ lookup('file', '/configs/Caddyfile' ) }}"
+      name: "{{ item.key }}"
+      data: "{{ lookup('file', item.value ) }}"
       rolling_versions: true
       versions_to_keep: 2
       state: present
+    loop: "{{ sdg_config.configs | dict2items }}"
+    loop_control:
+      label: "{{ item.key }}"
 
-  - name: setup authomator secrets
-    register: authoconfig
+  - name: setup docker secrets
+    register: docker_secrets
     docker_secret:
-      name: autho_config
-      data: "{{ lookup('file', '/configs/services/authomator/authomator_config.yaml' ) }}"
+      name: "{{ item.key }}"
+      data: "{{ lookup('file', item.value ) }}"
       rolling_versions: true
       versions_to_keep: 2
       state: present
+    loop: "{{ sdg_config.secrets | dict2items }}"
+    loop_control:
+      label: "{{ item.key }}"
 
-  - name: setup authomator dev secrets
-    register: authoconfig_dev
-    docker_secret:
-      name: autho_config_dev
-      data: "{{ lookup('file', '/configs/services/authomator/authomator_config_dev.yaml' ) }}"
-      rolling_versions: true
-      versions_to_keep: 2
-      state: present
+  ## 
+  # The configs and secret setup results are not usefull for selecting envionrment variables
+  # so we create a dict for each of them
+  - name: create config dict
+    set_fact:
+      dconfigs: "{{ dconfigs | default({}) | combine( {item.invocation.module_args.name : item.config_name} ) }}"
+    loop: "{{ docker_configs.results }}"
+    loop_control:
+      label: "{{ item.invocation.module_args.name }}"
 
-  - name: setup authomator keys
-    register: authokeys
-    docker_secret:
-      name: autho_keys
-      data: "{{ lookup('file', '/configs/services/authomator/keys.jwks' ) | from_json | to_json }}"
-      rolling_versions: true
-      versions_to_keep: 2
-      state: present
+  - name: create secrets dict
+    set_fact:
+      dsecrets: "{{ dsecrets | default({}) | combine( {item.invocation.module_args.name : item.secret_name} ) }}"
+    loop: "{{ docker_secrets.results }}"
+    loop_control:
+      label: "{{ item.invocation.module_args.name }}"
 
-  - name: setup authomator dev keys
-    register: authokeys_dev
-    docker_secret:
-      name: autho_keys_dev
-      data: "{{ lookup('file', '/configs/services/authomator/keys_dev.jwks' ) | from_json | to_json }}"
-      rolling_versions: true
-      versions_to_keep: 2
-      state: present
-
-  - name: setup ad-resolver secrets
-    register: adresolver_config
-    docker_secret:
-      name: adresolver_config
-      data: "{{ lookup('file', '/configs/services/ad_resolver/ad_resolver.json' ) | from_json | to_json }}"
-      rolling_versions: true
-      versions_to_keep: 2
-      state: present
-
-  - name: setup dspace_extractor secrets for digital collection
-    register: dspace_extractor_config
-    docker_secret:
-      name: dspace_extractor_config
-      data: "{{ lookup('file', '/configs/services/extractor/digital_collection.json' ) | from_json | to_json }}"
-      rolling_versions: true
-      versions_to_keep: 2
-      state: present
-
-  - name: setup secrets for the project db
-    register: projects_extractor_config
-    docker_secret:
-      name: projects_extractor_config
-      data: "{{ lookup('file', '/configs/services/extractor/projects.json' ) | from_json | to_json }}"
-      rolling_versions: true
-      versions_to_keep: 2
-      state: present
-
-  - name: setup keyword webhook secrets
-    register: webhookconfig
-    docker_secret:
-      name: webhook_config
-      data: "{{ lookup('file', '/configs/services/webhook/config.json' ) | from_json | to_json }}"
-      rolling_versions: true
-      versions_to_keep: 2
-      state: present
-
-  - name: setup dashboard configs
-    register: dashboardconfig
-    docker_config:
-      name: sdgweb_config
-      data: "{{ lookup('file', '/configs/dashboard_config.json' ) | from_json | to_json }}"
-      rolling_versions: true
-      versions_to_keep: 2
-      state: present
-
-  - name: setup sdg indexer configs
-    register: sdgindexer_config
-    docker_config:
-      name: sdgindexer_config
-      data: "{{ lookup('file', '/configs/services/indexer/config.json' ) | from_json | to_json }}"
-      rolling_versions: true
-      versions_to_keep: 2
-      state: present
-
-  - name: setup download gateway configs
-    register: download_gateway_config
-    docker_config:
-      name: download_gateway
-      data: "{{ lookup('file', '/configs/services/download_gateway/config.yaml' ) }}"
-      rolling_versions: true
-      versions_to_keep: 2
-      state: present
-
-  - name: setup graphiql
-    register: graphiql
-    docker_config:
-      name: tool_graphiql
-      data: "{{ lookup('file', '/configs/graphiql/index.html' ) }}"
-      rolling_versions: true
-      versions_to_keep: 2
-      state: present
+  ##
+  # Stack deployment
 
   # Deploy the content Services
   - name: deploy the DB stack
@@ -187,19 +114,19 @@
       INDEXER_SHA: "sha-{{ cicd.containers.sdgindexer }}"
   
       # Configs
-      DASHBOARD_CONFIG: "{{ dashboardconfig.config_name }}"
-      INDEXER_CONFIG: "{{ sdgindexer_config.config_name }}"
-      DLGW_CONFIG: "{{ download_gateway_config.config_name }}"
-      GRAPHIQL_INDEX: "{{ graphiql.config_name }}"
-      PROXY_CONFIG: "{{ proxyconfig.config_name }}"
+      DASHBOARD_CONFIG: "{{ dconfigs.sdgweb_config }}"
+      INDEXER_CONFIG: "{{ dconfigs.sdgindexer_config }}"
+      DLGW_CONFIG: "{{ dconfigs.download_gateway_config }}"
+      GRAPHIQL_INDEX: "{{ dconfigs.tool_graphiql }}"
+      PROXY_CONFIG: "{{ dconfigs.proxy_caddyfile }}"
   
       # Secrets
-      ADRESOLVER_CONFIG: "{{ adresolver_config.secret_name }}"
-      IMPORTER_KW_CONFIG: "{{ webhookconfig.secret_name }}"
-      IMPORTER_DC_CONFIG: "{{ dspace_extractor_config.secret_name }}"
-      IMPORTER_PR_CONFIG: "{{ projects_extractor_config.secret_name }}"
-      AUTHO_CONFIG: "{{ authoconfig.secret_name }}"
-      AUTHOKEYS: "{{ authokeys.secret_name }}"
+      ADRESOLVER_CONFIG: "{{ dsecrets.adresolver_config }}"
+      IMPORTER_KW_CONFIG: "{{ dsecrets.webhook_config }}"
+      IMPORTER_DC_CONFIG: "{{ dsecrets.dspace_extractor_config }}"
+      IMPORTER_PR_CONFIG: "{{ dsecrets.projects_extractor_config }}"
+      AUTHO_CONFIG: "{{ dsecrets.autho_config }}"
+      AUTHOKEYS: "{{ dsecrets.autho_keys }}"
       
     docker_stack:
       name: sdg
