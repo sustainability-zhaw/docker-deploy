@@ -1,18 +1,26 @@
 # docker-deploy
 
-An Ansible playbook for deploying the SDG Dashboard on Docker Swarm.
+An Ansible playbook for deploying the SDG Dashboard to a Docker Swarm.
+
+This is part of the open deployment strategy. This strategy consists of three repositories: 
+
+1. The System Inventory
+2. The Support Files
+3. The Ansible Playbook (this repository)
 
 ## Deployment
 
-This repository uses the auto deployment feature of the `ghcr.io/phish108/ansible-docker:7.2.0-1` container.
+This playbook expects an inventory with at least one `mainnode` host configured. The playbook expects that the host is a master node of a docker swarm and that the inventory user is capable to run all docker commands without requireing a password. 
+
+This repository uses the auto deployment feature of the `phish108/ansible:8.5.0-2` container image, so one can run: 
 
 ```
 docker run -it --rm 
            -v ${PRIVATE_SSH_KEYS}:/sshkeys \
            -v ${INVENTORY_PATH}:/inventory \
-           -v ${CONFIGS_PATH}:/configs \
+           -v ${SUPPORT_FILES_PATH}:/configs \
            -v $(pwd):/ansible \
-           ghcr.io/phish108/ansible-docker:7.2.0-1
+           phish108/ansible:8.5.0-4
 ```
 
 ## Preparations 
