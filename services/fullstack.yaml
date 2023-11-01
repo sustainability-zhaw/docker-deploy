@@ -1,9 +1,4 @@
 services:
-  mq: 
-    image: rabbitmq:3.12-management
-    networks:
-      - servicenet
-
   autho:
     image: ghcr.io/phish108/authomator:${AUTHOMATOR_SHA}
     networks:

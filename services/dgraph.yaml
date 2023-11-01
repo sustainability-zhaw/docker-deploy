@@ -23,6 +23,11 @@ services:
     deploy:
       restart_policy:
         condition: none
+ 
+  mq: 
+    image: rabbitmq:3.11-alpine
+    networks:
+      - servicenet
 
 networks:
   servicenet:
