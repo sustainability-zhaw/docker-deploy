@@ -102,6 +102,9 @@
       # Constraints
       DBHOST_CONSTRAINT: "{{ sdg_config.dgraph.constraints.host }}"
       # Configs & Secrets
+      MQ_MAIN_CONFIG: "{{ dconfigs.mq_main_config }}"
+      MQ_QUEUE_CONFIG: "{{ dconfigs.mq_queue_config }}"
+      MQ_USER_CONFIG: "{{ dsecrets.mq_user_config }}"
     docker_stack:
       name: dgraph
       state: present

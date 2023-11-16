@@ -25,9 +25,17 @@ services:
         condition: none
  
   mq: 
-    image: rabbitmq:3.11-alpine
+    image: rabbitmq:3.12.8-alpine
     networks:
       - servicenet
+    configs:
+    - source: mq_main_config
+      target: /etc/rabbitmq/rabbitmq.conf
+    - source: mq_queue_config
+      target: /etc/rabbitmq/definitions.d/02-queues-exchanges.json
+    secrets:
+    - source: mq_user_config
+      target: /etc/rabbitmq/definitions.d/00-users.json
 
 networks:
   servicenet:
@@ -38,3 +46,16 @@ volumes:
   dgraph:
     external: true
     name: dgraph
+
+configs:
+  mq_main_config:
+    external: true
+    name: ${MQ_MAIN_CONFIG}
+  mq_queue_config:
+    external: true
+    name: ${MQ_QUEUE_CONFIG}
+
+secrets: 
+  mq_user_config:
+    external: true
+    name: ${MQ_USER_CONFIG}
