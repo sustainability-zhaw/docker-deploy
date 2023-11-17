@@ -137,6 +137,8 @@
       AUTHOMATOR_SHA: "sha-{{ cicd.containers.authomator_sha }}"
       # DBINIT_SHA: "{{ cicd.containers.schema_sha }}"
       INDEXER_SHA: "sha-{{ cicd.containers.sdgindexer }}"
+      RESOLV_CLASS_SHA: "sha-{{ cicd.containers.resolveclass_sha }}"
+      RESOLV_DEPT_SHA: "sha-{{ cicd.containers.resolvedept_sha }}"
   
       # Configs
       DASHBOARD_CONFIG: "{{ dconfigs.sdgweb_config }}"
@@ -144,6 +146,8 @@
       DLGW_CONFIG: "{{ dconfigs.download_gateway_config }}"
       GRAPHIQL_INDEX: "{{ dconfigs.tool_graphiql }}"
       PROXY_CONFIG: "{{ dconfigs.proxy_caddyfile }}"
+      RESOLV_CLASS_CONFIG: "{{ dconfigs.resolver_classification_config }}"
+      RESOLV_DEPT_CONFIG: "{{ dconfigs.resolver_departments_config }}"
   
       # Secrets
       ADRESOLVER_CONFIG: "{{ dsecrets.adresolver_config }}"

@@ -64,7 +64,23 @@ services:
     configs:
       - source: indexerconfig
         target: /etc/app/config.json
-      
+  
+  resolver_classification:
+    image: ghcr.io/sustainability-zhaw/resolver-classification:${RESOLV_CLASS_SHA}
+    networks:
+      - servicenet
+    configs:
+      - source: resolverclassconfig
+        target: /etc/app/config.json
+
+  resolver_department:
+    image: ghcr.io/sustainability-zhaw/resolver-department:${RESOLV_DEPT_SHA}
+    networks:
+      - servicenet
+    configs:
+      - source: resolverdeptconfig
+        target: /etc/app/config.json
+
   proxy:
     image: caddy:2.7.5
     networks:
@@ -109,6 +125,13 @@ configs:
   gqlindex:
     external: true
     name: ${GRAPHIQL_INDEX}
+  
+  resolverclassconfig:
+    external: true
+    name: ${RESOLV_CLASS_CONFIG}
+  resolverdeptconfig:
+    external: true
+    name: ${RESOLV_DEPT_CONFIG}
 
 secrets: 
   dcconfig:
