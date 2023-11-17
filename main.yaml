@@ -107,7 +107,7 @@
       MQ_USER_CONFIG: "{{ dsecrets.mq_user_config }}"
     docker_stack:
       name: dgraph
-      state: present
+      state: present # deploy the stack
       # state: absent # uninstall the stack
       prune: true
       compose: 
@@ -116,8 +116,11 @@
   #
   # Wait a few moments for the db to come up, if it changed
   # 
-  # Normally this happens just by waiting for the stack to be deployed.
-  # 
+
+  - name: Wait for a few moments for the schema to be deployed
+    wait_for:
+      timeout: 30
+    delegate_to: localhost
 
   - name: Deploy the service stack
     environment:
@@ -152,7 +155,7 @@
       
     docker_stack:
       name: sdg
-      state: present
+      state: present # deploy the stack
       # state: absent # uninstall the stack
       prune: true
       compose: 
