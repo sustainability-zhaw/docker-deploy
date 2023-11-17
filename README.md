@@ -60,6 +60,10 @@ The layout of the inventory configs is as follows:
     - `evento.json` - configuration for the Evento Spider
   - `indexer`
     - `config.json` - configuration for the indexer
+  - `message-queue`
+    - `rabbitmq.conf` - the main rabbitmq configuration, mostly loading the definitions for users and exchanges
+    - `00-users.json` - the user config for identifiable services
+    - `02-queues-exchanges.json` - definition for all queues and exchanges
   - `webhook`
     - `config.json` - configuration for the keywords-webhook endpoint (!! contains credentials !!)
 
@@ -78,3 +82,26 @@ containers:
 ```
 
 The containers.yaml file provides the reference to the the most recent versions of the service containers. 
+
+## Configuration of the message queue
+
+The message is handled by rabbitmq. 
+
+The minimum configuration for our purposes is provided in `contrib/message-queue`. 
+
+The configuration is designed as such, so the the definitions for users, exchanges, queues etc. are configured separately under `/etc/rabbitmq/definitions.d/` in the rabbitmq container.
+
+Important note:
+
+The configuration of the services must match rabbitmq's definition, otherwise the system won't work. 
+
+- The service names for connecting to the message queue should not be touched. The default is the name of the service.
+
+- The passwords match the passwords set in rabbitmq and in the respective service. The default is  `guest`.
+
+- The main exchange must match for ALL services and the message queue. The default is in local development `zhaw-km`, in dev-deployment `zhaw_content`.
+
+If services appear not to work do the following: 
+
+1. Check the username and password configuration of all services to match those set for rabbitmq.
+2. Check the exchange name of all services use the same configuration as rabbitmq.
