@@ -92,6 +92,7 @@
 
   ##
   - name: Deploy the DB stack
+    register: dbstack
     # This stack must be deployed separately because the DB (cluster) needs to launch
     # and the initialisation needs to complete before any of the other services appears on the cluster
     environment:
@@ -121,6 +122,7 @@
     wait_for:
       timeout: 30
     delegate_to: localhost
+    when: dbstack is changed
 
   - name: Deploy the service stack
     environment:
