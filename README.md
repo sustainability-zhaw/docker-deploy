@@ -22,7 +22,7 @@ docker run -it --rm
            -v ${INVENTORY_PATH}:/inventory \
            -v ${SUPPORT_FILES_PATH}:/configs \
            -v $(pwd):/ansible \
-           phish108/ansible:8.5.0-4
+           phish108/ansible:9.1.0-2
 ```
 
 ## Preparations 
