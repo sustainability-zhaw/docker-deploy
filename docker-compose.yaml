@@ -1,0 +1,9 @@
+services: 
+  ansible:
+    image: phish108/ansible:9.1.0-2
+    restart: no
+    volumes:
+      - ./:/ansible
+      - ~/.autossh:/sshkeys
+      - ../deployment-configs:/configs
+      - ../inventory-docker:/inventory

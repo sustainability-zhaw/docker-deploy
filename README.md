@@ -14,7 +14,23 @@ This is part of the open deployment strategy. This strategy consists of three re
 
 This playbook expects an inventory with at least one `mainnode` host configured. The playbook expects that the host is a master node of a docker swarm and that the inventory user is capable to run all docker commands without requireing a password. 
 
-This repository uses the auto deployment feature of the `phish108/ansible:8.5.0-2` container image, so one can run: 
+This repository uses the auto deployment feature of the `phish108/ansible:9.1.0-2` container image. 
+
+If all repos have been cloned adjacent to each other, one can use `docker compose run`
+
+```
+docker compose run --rm ansible
+```
+
+The compose file expects to have the following repository names: 
+
+- `.` -> `/ansible`
+- `~/.autossh` -> `/sshkeys` (for password free ssh keys)
+- `../deploy-configs` -> `/configs` 
+- `../inventory-docker` -> `/inventory`
+
+
+For more fine grained control: 
 
 ```
 docker run -it --rm 
