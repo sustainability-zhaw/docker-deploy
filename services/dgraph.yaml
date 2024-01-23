@@ -24,7 +24,7 @@ services:
         condition: none
  
   mq: 
-    image: rabbitmq:3.12.8-alpine
+    image: rabbitmq:3.12.12-alpine
     networks:
       - servicenet
     configs:
