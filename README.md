@@ -19,7 +19,7 @@ This repository uses the auto deployment feature of the `phish108/ansible:9.1.0-
 If all repos have been cloned adjacent to each other, one can use `docker compose run`
 
 ```
-docker compose run --rm ansible
+docker compose run --rm deploy
 ```
 
 The compose file expects to have the following repository names: 
