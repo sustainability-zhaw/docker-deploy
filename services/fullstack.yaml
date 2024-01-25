@@ -135,7 +135,6 @@ configs:
   clearindexconfig:
     external: true
     name: ${CLEARINDEX_CONFIG}
-  
   resolverclassconfig:
     external: true
     name: ${RESOLV_CLASS_CONFIG}

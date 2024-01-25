@@ -150,6 +150,7 @@
       PROXY_CONFIG: "{{ dconfigs.proxy_caddyfile }}"
       RESOLV_CLASS_CONFIG: "{{ dconfigs.resolver_classification_config }}"
       RESOLV_DEPT_CONFIG: "{{ dconfigs.resolver_departments_config }}"
+      CLEARINDEX_CONFIG: "{{ dconfigs.clearindex_config }}"
   
       # Secrets
       ADRESOLVER_CONFIG: "{{ dsecrets.adresolver_config }}"
