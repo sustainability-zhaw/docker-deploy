@@ -81,6 +81,13 @@ services:
       - source: resolverdeptconfig
         target: /etc/app/config.json
 
+  clearindex:
+    image: hcr.io/sustainability-zhaw/resolver-department:${CLEARINDEX_SHA}
+    networks:
+      - servicenet
+    configs:
+      - source: clearindexconfig
+        target: /etc/app/config.json
   proxy:
     image: caddy:2.7.5
     networks:
@@ -125,6 +132,9 @@ configs:
   gqlindex:
     external: true
     name: ${GRAPHIQL_INDEX}
+  clearindexconfig:
+    external: true
+    name: ${CLEARINDEX_CONFIG}
   
   resolverclassconfig:
     external: true
