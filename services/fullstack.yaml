@@ -81,15 +81,15 @@ services:
       - source: resolverdeptconfig
         target: /etc/app/config.json
 
-  clearindex:
-    image: ghcr.io/sustainability-zhaw/clearindex:${CLEARINDEX_SHA}
-    networks:
-      - servicenet
-    configs:
-      - source: clearindexconfig
-        target: /etc/app/config.yaml
+  # clearindex:
+  #   image: ghcr.io/sustainability-zhaw/clearindex:${CLEARINDEX_SHA}
+  #   networks:
+  #     - servicenet
+  #   configs:
+  #     - source: clearindexconfig
+  #       target: /etc/app/config.yaml
   proxy:
-    image: caddy:2.7.5
+    image: caddy:2.7.6
     networks:
       - servicenet
     ports:
@@ -101,7 +101,16 @@ services:
       - source: proxyconfig
         target: /etc/caddy/Caddyfile
     volumes:
-      - proxy_config:/config
+      - source: proxy_config
+        target: /config
+        type: volume
+      - source: proxy_data
+        target: /data
+        type: volume
+    deploy:
+      placement:
+        constraints:
+          - node.hostname == ${DBHOST_CONSTRAINT}
 
   graphiql: 
      image: caddy:2.7.5
@@ -132,9 +141,9 @@ configs:
   gqlindex:
     external: true
     name: ${GRAPHIQL_INDEX}
-  clearindexconfig:
-    external: true
-    name: ${CLEARINDEX_CONFIG}
+  # clearindexconfig:
+  #   external: true
+  #   name: ${CLEARINDEX_CONFIG}
   resolverclassconfig:
     external: true
     name: ${RESOLV_CLASS_CONFIG}
@@ -164,3 +173,4 @@ secrets:
 
 volumes:
   proxy_config:
+  proxy_data:

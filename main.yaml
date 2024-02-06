@@ -126,6 +126,8 @@
 
   - name: Deploy the service stack
     environment:
+      DBHOST_CONSTRAINT: "{{ sdg_config.dgraph.constraints.host }}"
+      
       # Network names
       STACK_NETWORK: sdgservices
   
@@ -141,7 +143,7 @@
       INDEXER_SHA: "sha-{{ cicd.containers.sdgindexer }}"
       RESOLV_CLASS_SHA: "sha-{{ cicd.containers.resolveclass_sha }}"
       RESOLV_DEPT_SHA: "sha-{{ cicd.containers.resolvedept_sha }}"
-      CLEARINDEX_SHA: "sha-{{ cicd.containers.clearindex_sha }}"
+      # CLEARINDEX_SHA: "sha-{{ cicd.containers.clearindex_sha }}"
   
       # Configs
       DASHBOARD_CONFIG: "{{ dconfigs.sdgweb_config }}"
@@ -151,7 +153,7 @@
       PROXY_CONFIG: "{{ dconfigs.proxy_caddyfile }}"
       RESOLV_CLASS_CONFIG: "{{ dconfigs.resolver_classification_config }}"
       RESOLV_DEPT_CONFIG: "{{ dconfigs.resolver_departments_config }}"
-      CLEARINDEX_CONFIG: "{{ dconfigs.clearindex_config }}"
+      # CLEARINDEX_CONFIG: "{{ dconfigs.clearindex_config }}"
   
       # Secrets
       ADRESOLVER_CONFIG: "{{ dsecrets.adresolver_config }}"
