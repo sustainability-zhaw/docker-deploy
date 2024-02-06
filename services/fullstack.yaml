@@ -82,7 +82,7 @@ services:
         target: /etc/app/config.json
 
   clearindex:
-    image: hcr.io/sustainability-zhaw/resolver-department:${CLEARINDEX_SHA}
+    image: ghcr.io/sustainability-zhaw/clearindex:${CLEARINDEX_SHA}
     networks:
       - servicenet
     configs:

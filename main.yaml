@@ -141,6 +141,7 @@
       INDEXER_SHA: "sha-{{ cicd.containers.sdgindexer }}"
       RESOLV_CLASS_SHA: "sha-{{ cicd.containers.resolveclass_sha }}"
       RESOLV_DEPT_SHA: "sha-{{ cicd.containers.resolvedept_sha }}"
+      CLEARINDEX_SHA: "sha-{{ cicd.containers.clearindex_sha }}"
   
       # Configs
       DASHBOARD_CONFIG: "{{ dconfigs.sdgweb_config }}"
