@@ -87,7 +87,7 @@ services:
       - servicenet
     configs:
       - source: clearindexconfig
-        target: /etc/app/config.json
+        target: /etc/app/config.yaml
   proxy:
     image: caddy:2.7.5
     networks:
