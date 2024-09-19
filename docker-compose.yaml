@@ -1,6 +1,6 @@
 services: 
   deploy:
-    image: phish108/ansible:10.0.1-1
+    image: phish108/ansible:10.2.0-1
     restart: no
     volumes:
       - ./:/ansible
