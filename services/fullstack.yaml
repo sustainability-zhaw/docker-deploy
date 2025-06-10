@@ -89,7 +89,7 @@ services:
   #     - source: clearindexconfig
   #       target: /etc/app/config.yaml
   proxy:
-    image: caddy:2.7.6
+    image: caddy:2.10.0
     networks:
       - servicenet
     ports:
@@ -113,7 +113,7 @@ services:
           - node.hostname == ${DBHOST_CONSTRAINT}
 
   graphiql: 
-     image: caddy:2.7.5
+     image: caddy:2.10.0
      networks:
       - servicenet
      configs:
