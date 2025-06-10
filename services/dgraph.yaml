@@ -1,6 +1,6 @@
 services:
   db:
-    image: dgraph/standalone:v24.0.0
+    image: dgraph/standalone:v24.1.3
     networks:
       - servicenet
     volumes:
@@ -11,7 +11,7 @@ services:
       placement:
         constraints:
           - node.hostname == ${DBHOST_CONSTRAINT}
-  
+          
   db_init:
     image: ghcr.io/sustainability-zhaw/dgraph-schema:${DBINIT_SHA}
     networks:
