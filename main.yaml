@@ -1,7 +1,7 @@
 - name: setup edge proxy service with SDG
   # speed things up
   gather_facts: false
-  hosts: mainnode
+  hosts: sdgmanager
 
   tasks:
   - name: Load service configuration

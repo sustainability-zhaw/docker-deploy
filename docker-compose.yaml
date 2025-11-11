@@ -6,4 +6,4 @@ services:
       - ./:/ansible
       - ~/.autossh:/sshkeys
       - ../deployment-configs:/configs
-      - ../inventory-docker:/inventory
+      - ../inventory:/inventory
