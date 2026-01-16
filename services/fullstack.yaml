@@ -49,6 +49,22 @@ services:
       - source: prconfig
         target: /etc/app/config.json
 
+  evento_importer: 
+    image: ghcr.io/sustainability-zhaw/extraction-evento:${IMPORT_EVNETO_SHA}
+    networks:
+      - servicenet
+    configs:
+      - source: eventoconfig
+        target: /etc/app/config.json
+
+  moku_importer: 
+    image: ghcr.io/sustainability-zhaw/extraction-moku:${IMPORT_MOKU_SHA}
+    networks:
+      - servicenet
+    secrets:
+      - source: mokuconfig
+        target: /etc/app/config.json
+
   adresolver: 
     image: ghcr.io/sustainability-zhaw/ad-resolver:${IMPORT_AD_SHA}
     networks:
@@ -150,6 +166,9 @@ configs:
   resolverdeptconfig:
     external: true
     name: ${RESOLV_DEPT_CONFIG}
+  eventoconfig:
+    external: true
+    name: ${IMPORTER_EVENTO_CONFIG}
 
 secrets: 
   dcconfig:
@@ -170,6 +189,9 @@ secrets:
   kwconfig:
     external: true
     name: ${IMPORTER_KW_CONFIG}
+  mokuconfig:
+    external: true
+    name: ${IMPORTER_MOKU_CONFIG}
 
 volumes:
   proxy_config:
