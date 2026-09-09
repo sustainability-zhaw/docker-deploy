@@ -88,6 +88,7 @@ services:
   #   configs:
   #     - source: clearindexconfig
   #       target: /etc/app/config.yaml
+
   proxy:
     image: caddy:2.10.0
     networks:

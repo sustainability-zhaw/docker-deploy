@@ -97,7 +97,7 @@
     # and the initialisation needs to complete before any of the other services appears on the cluster
     environment:
       # Network names
-      STACK_NETWORK: sdgservices
+      STACK_NETWORK: sdgservices2
       # Image tags
       DBINIT_SHA: "sha-{{ cicd.containers.schema_sha }}"
       # Constraints
@@ -129,7 +129,7 @@
       DBHOST_CONSTRAINT: "{{ sdg_config.dgraph.constraints.host }}"
       
       # Network names
-      STACK_NETWORK: sdgservices
+      STACK_NETWORK: sdgservices2
   
       # Image tags
       DLGW_SHA: "sha-{{ cicd.containers.dlgateway }}"
