@@ -26,7 +26,7 @@ This is related to missing or mistyped ansible configurations.
 - if the error references an invalid image, this refers to a typo in the version or image label in `/configs/containers.yaml`
 - If the error refers to a dictionary key is missing, check the level that is complained:
   - If networking is mentioned, then there is a typo in the external network section
-  - If secrets or configs are mentioned, then there is a bad config reference. This can happen, when a configuration file has changed from being setup as a secret to being a config in the swarm. Verify the correct keys in both in the sections `configs` and `secrets` of `configs/config.yaml`
+  - If secrets or configs are mentioned, then there is a bad config reference. This can happen, when a configuration file has changed from being setup as a secret to being a config in the swarm. Verify the correct keys in both in the sections `configs` and `secrets` of `/configs/config.yaml`
 
 ## Deployment problem: Service is inaccessible, Browser reports service is unavailable
 
