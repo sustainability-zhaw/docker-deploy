@@ -1,6 +1,36 @@
-# Troubleshooting deployments 
+# Troubleshooting
 
-## Service is inaccessible, Browser reports service is unavailable
+## Ansible problem: Host not found
+
+This can have three causes: 
+
+1. The inventory file is missing. In this case verify that the folder structure is still valid. 
+2. The inventory file (typically `main.yaml`) contains invalid hostnames. In this case fix the hostnames in the inventory file
+3. The `known-hosts` does not contain valid host keys. Run the respective maintenance tasks to update the `known-hosts` file. 
+
+## Ansible problem: File not found
+
+This problem raises during step `Load service configuration` (task 1) or `Load container sha from config` (task 2) of the playbook. 
+
+Verify that `/config/` is properly mounted contains all expected configuration files for the playbook. 
+
+## Ansible problem: Option or dictionary key not found, unless during stack deployment tasks.  
+
+This is related to missing or mistyped ansible configurations.
+
+## Compose problem: Ansible reports an error during the stack deployments
+
+**Read the error message carefully!**
+
+- if the error references to a malformed image signature, this refers to a typo of the environment variables in the respective compose file in the `services` folder.
+- if the error references an invalid image, this refers to a typo in the version or image label in `/configs/containers.yaml`
+- If the error refers to a dictionary key is missing, check the level that is complained:
+  - If networking is mentioned, then there is a typo in the external network section
+  - If secrets or configs are mentioned, then there is a config reference. This can happen, when a configuration file has changed from being setup as a secret to being a config in the swarm. Verify the correct keys in both in the sections `configs` and `secrets` of `configs/config.yaml`
+
+## Deployment problem: Service is inaccessible, Browser reports service is unavailable
+
+**This problem raises only with successful ansible deployments**
 
 Verify the IP Addresses exposed in DNS using `dig ${DNSNAME}`. 
 
