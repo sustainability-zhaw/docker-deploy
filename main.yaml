@@ -162,7 +162,7 @@
       IMPORTER_KW_CONFIG: "{{ dsecrets.webhook_config }}"
       IMPORTER_DC_CONFIG: "{{ dsecrets.dspace_extractor_config }}"
       IMPORTER_PR_CONFIG: "{{ dsecrets.projects_extractor_config }}"
-      IMPORTER_EVENTO_CONFIG: "{{ dsecrets.evento_extractor_config }}"
+      IMPORTER_EVENTO_CONFIG: "{{ dconfigs.evento_extractor_config }}"
       IMPORTER_MOKU_CONFIG: "{{ dsecrets.moku_extractor_config }}"
       AUTHO_CONFIG: "{{ dsecrets.autho_config }}"
       AUTHOKEYS: "{{ dsecrets.autho_keys }}"

@@ -50,7 +50,7 @@ services:
         target: /etc/app/config.json
 
   evento_importer: 
-    image: ghcr.io/sustainability-zhaw/extraction-evento:${IMPORT_EVNETO_SHA}
+    image: ghcr.io/sustainability-zhaw/extraction-evento:${IMPORT_EVENTO_SHA}
     networks:
       - servicenet
     configs:
