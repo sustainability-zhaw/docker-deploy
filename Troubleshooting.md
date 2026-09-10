@@ -12,7 +12,7 @@ This can have three causes:
 
 This problem raises during step `Load service configuration` (task 1) or `Load container sha from config` (task 2) of the playbook. 
 
-Verify that `/config/` is properly mounted contains all expected configuration files for the playbook. 
+Verify that `/config/` is properly mounted and contains all expected configuration files for the playbook. 
 
 ## Ansible problem: Option or dictionary key not found, unless during stack deployment tasks.  
 
